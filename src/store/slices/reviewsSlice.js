@@ -6,7 +6,7 @@ export const fetchReviews = createAsyncThunk(
   'reviews/fetchReviews',
   async (societyId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/societies/${societyId}/reviews`);
+      const response = await api.get(`/societies/${societyId}/reviews`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch reviews');
@@ -18,7 +18,7 @@ export const addReview = createAsyncThunk(
   'reviews/addReview',
   async ({ societyId, reviewData }, { rejectWithValue }) => {
     try {
-      const response = await api.post(`/api/societies/${societyId}/reviews`, reviewData);
+      const response = await api.post(`/societies/${societyId}/reviews`, reviewData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to add review');

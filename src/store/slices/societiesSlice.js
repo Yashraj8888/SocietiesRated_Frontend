@@ -30,7 +30,7 @@ export const fetchSocieties = createAsyncThunk(
   'societies/fetchSocieties',
   async (searchQuery = '', { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/societies${searchQuery ? `?search=${searchQuery}` : ''}`);
+      const response = await api.get(`/societies${searchQuery ? `?search=${searchQuery}` : ''}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch societies');
@@ -42,7 +42,7 @@ export const fetchSocietyById = createAsyncThunk(
   'societies/fetchSocietyById',
   async (societyId, { rejectWithValue }) => {
     try {
-      const response = await api.get(`/api/societies/${societyId}`);
+      const response = await api.get(`/societies/${societyId}`);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to fetch society details');
@@ -54,7 +54,7 @@ export const addSociety = createAsyncThunk(
   'societies/addSociety',
   async (societyData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/api/societies', societyData);
+      const response = await api.post('/societies/add', societyData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to add society');

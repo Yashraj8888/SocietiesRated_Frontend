@@ -6,7 +6,7 @@ export const login = createAsyncThunk(
   'auth/login',
   async (credentials, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/login', credentials);
+      const response = await axios.post('/auth/login', credentials);
       localStorage.setItem('token', response.data.token);
       return response.data;
     } catch (error) {
@@ -19,7 +19,7 @@ export const register = createAsyncThunk(
   'auth/register',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/api/auth/register', userData);
+      const response = await axios.post('/auth/register', userData);
       localStorage.setItem('token', response.data.token);
       return response.data;
     } catch (error) {
@@ -36,7 +36,7 @@ export const getProfile = createAsyncThunk(
       if (!token) {
         return rejectWithValue('No token found');
       }
-      const response = await axios.get('/api/auth/me', {
+      const response = await axios.get('/auth/me', {
         headers: { Authorization: `Bearer ${token}` },
       });
       return response.data;

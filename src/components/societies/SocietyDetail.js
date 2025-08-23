@@ -75,6 +75,11 @@ const SocietyDetail = () => {
     });
   };
 
+  const formatRating = (rating) => {
+    const numericRating = Number(rating) || 0;
+    return numericRating.toFixed(1);
+  };
+
   if (societyLoading) {
     return (
       <div className="flex justify-center py-12">
@@ -130,9 +135,9 @@ const SocietyDetail = () => {
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-6">
             <div className="flex items-center space-x-2">
-              <StarRating rating={currentSociety.in_app_rating_avg || 0} size="w-6 h-6" />
+              <StarRating rating={Number(currentSociety.in_app_rating_avg) || 0} size="w-6 h-6" />
               <span className="text-lg font-semibold text-secondary-900">
-                {currentSociety.in_app_rating_avg ? currentSociety.in_app_rating_avg.toFixed(1) : '0.0'}
+                {formatRating(currentSociety.in_app_rating_avg)}
               </span>
             </div>
             <span className="text-secondary-600">
@@ -307,7 +312,7 @@ const SocietyDetail = () => {
               <div>
                 <span className="text-sm font-medium text-secondary-700">Average Rating:</span>
                 <p className="text-secondary-900">
-                  {currentSociety.in_app_rating_avg ? currentSociety.in_app_rating_avg.toFixed(1) : 'No ratings yet'}
+                  {formatRating(currentSociety.in_app_rating_avg)}
                 </p>
               </div>
               <div>
