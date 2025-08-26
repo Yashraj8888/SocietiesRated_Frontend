@@ -52,7 +52,7 @@ const authSlice = createSlice({
   initialState: {
     user: null,
     token: localStorage.getItem('token'),
-    isAuthenticated: false,
+    isAuthenticated: !!localStorage.getItem('token'),
     isLoading: false,
     error: null,
   },
@@ -66,6 +66,12 @@ const authSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    // Add a new reducer for state rehydration
+    rehydrateAuth: (state) => {
+      const token = localStorage.getItem('token');
+      state.token = token;
+      state.isAuthenticated = !!token;
     },
   },
   extraReducers: (builder) => {
@@ -110,6 +116,10 @@ const authSlice = createSlice({
       state.isLoading = false;
       state.isAuthenticated = true;
       state.user = action.payload;
+      // Ensure token is in sync
+      if (!state.token) {
+        state.token = localStorage.getItem('token');
+      }
     });
     builder.addCase(getProfile.rejected, (state, action) => {
       state.isLoading = false;
@@ -118,5 +128,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, rehydrateAuth } = authSlice.actions;
 export default authSlice.reducer;
