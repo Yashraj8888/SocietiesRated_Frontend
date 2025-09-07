@@ -76,15 +76,19 @@ const AddSociety = () => {
 
     try {
       const societyData = {
-        ...formData,
-        latitude: formData.latitude ? parseFloat(formData.latitude) : null,
-        longitude: formData.longitude ? parseFloat(formData.longitude) : null
+        name: formData.name.trim(),
+        address: formData.address.trim(),
+        city: formData.city.trim(),
+        description: formData.description.trim(),
+        latitude: formData.latitude,
+        longitude: formData.longitude
       };
 
       const result = await dispatch(addSociety(societyData)).unwrap();
       toast.success('Society added successfully!');
       navigate(`/society/${result.id}`);
     } catch (error) {
+      console.error('Add society error:', error);
       toast.error(error.message || 'Failed to add society');
     }
   };

@@ -16,8 +16,11 @@ const SocietyDetail = () => {
   const [newReview, setNewReview] = useState({
     rating: 0,
     comment: '',
-    pros: '',
-    cons: ''
+    security: 0,
+    amenities: 0,
+    location: 0,
+    maintenance: 0,
+    noise: 0
   });
 
   const { currentSociety, isLoading: societyLoading } = useSelector((state) => state.societies);
@@ -41,28 +44,49 @@ const SocietyDetail = () => {
     }
 
     if (newReview.rating === 0) {
-      toast.error('Please select a rating');
+      toast.error('Please select overall rating');
       return;
     }
 
     if (!newReview.comment.trim()) {
-      toast.error('Please add a comment');
+      toast.error('Please add a review text');
       return;
     }
 
     try {
+      // Ensure all required data is present and properly formatted
+      const reviewData = {
+        rating: parseInt(newReview.rating),
+        comment: newReview.comment.trim(),
+        security: parseInt(newReview.security) || 0,
+        amenities: parseInt(newReview.amenities) || 0,
+        location: parseInt(newReview.location) || 0,
+        maintenance: parseInt(newReview.maintenance) || 0,
+        noise: parseInt(newReview.noise) || 0
+      };
+
+      console.log('Submitting review:', { societyId: id, reviewData }); // Debug log
+
       await dispatch(addReview({
         societyId: id,
-        ...newReview
+        reviewData
       })).unwrap();
       
-      setNewReview({ rating: 0, comment: '', pros: '', cons: '' });
+      setNewReview({
+        rating: 0,
+        comment: '',
+        security: 0,
+        amenities: 0,
+        location: 0,
+        maintenance: 0,
+        noise: 0
+      });
+      
       setShowReviewForm(false);
       toast.success('Review added successfully!');
-      
-      // Refresh society data to get updated ratings
-      dispatch(fetchSocietyById(id));
+      dispatch(fetchReviews(id)); // Refresh reviews
     } catch (error) {
+      console.error('Review submission error:', error);
       toast.error(error.message || 'Failed to add review');
     }
   };
@@ -225,6 +249,65 @@ const SocietyDetail = () => {
                   </div>
                 </div>
 
+                {/* Additional Rating Inputs */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                      Security Rating
+                    </label>
+                    <StarRating
+                      rating={newReview.security}
+                      interactive={true}
+                      onRatingChange={(rating) => setNewReview({ ...newReview, security: rating })}
+                      size="w-6 h-6"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                      Amenities Rating
+                    </label>
+                    <StarRating
+                      rating={newReview.amenities}
+                      interactive={true}
+                      onRatingChange={(rating) => setNewReview({ ...newReview, amenities: rating })}
+                      size="w-6 h-6"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                      Location Rating
+                    </label>
+                    <StarRating
+                      rating={newReview.location}
+                      interactive={true}
+                      onRatingChange={(rating) => setNewReview({ ...newReview, location: rating })}
+                      size="w-6 h-6"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                      Maintenance Rating
+                    </label>
+                    <StarRating
+                      rating={newReview.maintenance}
+                      interactive={true}
+                      onRatingChange={(rating) => setNewReview({ ...newReview, maintenance: rating })}
+                      size="w-6 h-6"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-secondary-700 mb-2">
+                      Noise Rating
+                    </label>
+                    <StarRating
+                      rating={newReview.noise}
+                      interactive={true}
+                      onRatingChange={(rating) => setNewReview({ ...newReview, noise: rating })}
+                      size="w-6 h-6"
+                    />
+                  </div>
+                </div>
+
                 <div className="flex gap-3">
                   <button
                     type="submit"
@@ -258,19 +341,29 @@ const SocietyDetail = () => {
             <div className="space-y-6">
               {reviews.map((review) => (
                 <div key={review.id} className="card p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <div>
-                      <div className="flex items-center space-x-3 mb-2">
-                        <h4 className="font-semibold text-secondary-900">
-                          {review.user_name}
-                        </h4>
-                        <StarRating rating={review.rating} size="w-5 h-5" />
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        {/* Reviewer name + rating */}
+                        <div className="flex items-center space-x-3 mb-2">
+                          <h4 className="font-semibold text-gray-900 text-lg">
+                            {review.display_name}
+                          </h4>
+                          <StarRating rating={review.overall_rating} size="w-5 h-5" />
+                        </div>
+
+                        {/* Review text */}
+                        <p className="text-gray-700 mb-3 leading-relaxed">
+                          {review.text}
+                        </p>
+
+                        {/* Date */}
+                        <p className="text-xs text-gray-500">
+                          {formatDate(review.created_at)}
+                        </p>
                       </div>
-                      <p className="text-sm text-secondary-500">
-                        {formatDate(review.created_at)}
-                      </p>
                     </div>
-                  </div>
+      
+
 
                   <p className="text-secondary-700 mb-4">{review.comment}</p>
 

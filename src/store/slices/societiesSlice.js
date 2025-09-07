@@ -54,9 +54,19 @@ export const addSociety = createAsyncThunk(
   'societies/addSociety',
   async (societyData, { rejectWithValue }) => {
     try {
-      const response = await api.post('/societies/add', societyData);
+      const formattedData = {
+        name: societyData.name,
+        address: societyData.address,
+        city: societyData.city,
+        description: societyData.description,
+        lat: parseFloat(societyData.latitude) || null,
+        lng: parseFloat(societyData.longitude) || null
+      };
+      
+      const response = await api.post('/societies/add', formattedData);
       return response.data;
     } catch (error) {
+      console.error('API Error:', error.response?.data || error.message);
       return rejectWithValue(error.response?.data?.message || 'Failed to add society');
     }
   }

@@ -51,13 +51,39 @@ export const societiesAPI = {
   getSocietiesByCity: (city, limit = 10) => api.get(`/societies/city/${encodeURIComponent(city)}?limit=${limit}`),
   getNearbySocieties: (lat, lng, radius = 5000) => api.get(`/societies/nearby/search?lat=${lat}&lng=${lng}&radius=${radius}`),
   getSocietyById: (id) => api.get(`/societies/${id}`),
-  addSociety: (societyData) => api.post('/societies/add', societyData),
+  addSociety: (societyData) => {
+    const formattedData = {
+      name: societyData.name,
+      address: societyData.address,
+      city: societyData.city,
+      description: societyData.description,
+      lat: parseFloat(societyData.latitude) || null,
+      lng: parseFloat(societyData.longitude) || null
+    };
+    return api.post('/societies/add', formattedData);
+  },
 };
 
 // Reviews API
 export const reviewsAPI = {
   getSocietyReviews: (societyId) => api.get(`/reviews/${societyId}`),
-  addReview: (reviewData) => api.post('/reviews', reviewData),
+  addReview: (reviewData) => {
+    // Match exactly what backend expects
+    const formattedData = {
+      society_id: reviewData.societyId,
+      overall_rating: parseInt(reviewData.rating),
+      text: reviewData.comment || '',  // Ensure text is not undefined
+      dims: {
+        security: parseInt(reviewData.dimensions.security) || 0,
+        amenities: parseInt(reviewData.dimensions.amenities) || 0,
+        location: parseInt(reviewData.dimensions.location) || 0,
+        maintenance: parseInt(reviewData.dimensions.maintenance) || 0,
+        noise: parseInt(reviewData.dimensions.noise) || 0
+      }
+    };
+    console.log('Sending review data:', formattedData); // Debug log
+    return api.post('/reviews/create', formattedData);
+  }
 };
 
 export default api;
